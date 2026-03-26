@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Luna 🖤</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0010;
+    min-height: 100vh;
+    font-family: 'Playfair Display', serif;
+    overflow-x: hidden;
+  }
+
+  /* STARS */
+  .stars { position: fixed; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 0; }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.1; transform: scale(0.8); }
+    to   { opacity: 1;   transform: scale(1.3); }
+  }
+
+  /* MUSIC PLAYER */
+  #yt-frame { display: none; }
+
+  .music-bar {
+    position: fixed;
+    bottom: 22px; right: 22px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .music-label {
+    font-size: 11px;
+    color: #c084fc;
+    letter-spacing: 2px;
+    font-family: 'Cinzel Decorative', cursive;
+    opacity: 0;
+    animation: appear 1s 2.5s forwards;
+    white-space: nowrap;
+  }
+  @keyframes appear { to { opacity: 0.75; } }
+
+  .replay-btn, .pause-btn {
+    background: rgba(15,0,30,0.92);
+    border: 0.5px solid rgba(244,114,182,0.5);
+    border-radius: 50%;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: appear 1s 2.5s forwards;
+    box-shadow: 0 0 18px rgba(192,132,252,0.25);
+  }
+  .replay-btn:hover, .pause-btn:hover {
+    border-color: #f472b6;
+    box-shadow: 0 0 24px rgba(244,114,182,0.45);
+    transform: scale(1.1);
+  }
+  .replay-btn.spin svg { animation: spinonce 0.5s ease; }
+  @keyframes spinonce { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* PAGE */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
+
+  /* BAYONETTA IMAGE */
+  .bayo-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: bayoIn 1.6s 0.2s ease forwards;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  @keyframes bayoIn {
+    0%   { opacity: 0; transform: translateY(40px) scale(0.94); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .bayo-img {
+    width: 100%;
+    max-height: 440px;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 16px;
+    border: 0.5px solid rgba(192,132,252,0.4);
+    animation: glowPulse 3.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%,100% {
+      filter: drop-shadow(0 0 14px rgba(192,132,252,0.45))
+              drop-shadow(0 0 30px rgba(244,114,182,0.2));
+    }
+    50% {
+      filter: drop-shadow(0 0 32px rgba(244,114,182,0.65))
+              drop-shadow(0 0 60px rgba(192,132,252,0.5));
+    }
+  }
+
+  /* TOP DECO */
+  .top-decoration {
+    text-align: center;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeDown 1s 1s ease forwards;
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .skull-row { display: flex; justify-content: center; gap: 14px; margin-bottom: 10px; }
+  .skull {
+    font-size: 22px;
+    filter: drop-shadow(0 0 6px #c084fc);
+    animation: float 3s ease-in-out infinite;
+  }
+  .skull:nth-child(2) { animation-delay: 0.5s; }
+  .skull:nth-child(3) { animation-delay: 1s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-7px); }
+  }
+  .title-name {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(30px, 7vw, 52px);
+    background: linear-gradient(135deg, #f0abfc, #c084fc, #818cf8, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 6px;
+    background-size: 300% 300%;
+    animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .subtitle {
+    color: #d8b4fe;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-style: italic;
+    opacity: 0.8;
+    margin-top: 6px;
+  }
+
+  /* DIVIDER */
+  .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; opacity: 0.5; }
+  .divider-line {
+    flex: 1; height: 0.5px;
+    background: linear-gradient(to right, transparent, #c084fc, transparent);
+  }
+  .divider-gem {
+    width: 8px; height: 8px;
+    background: #f472b6;
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px #f472b6;
+  }
+
+  /* CARD */
+  .card {
+    background: linear-gradient(135deg, rgba(20,5,40,0.97), rgba(10,0,25,0.99));
+    border: 0.5px solid rgba(192,132,252,0.4);
+    border-radius: 18px;
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 1.2s 1.2s ease forwards;
+    box-shadow: 0 0 50px rgba(192,132,252,0.07), inset 0 0 60px rgba(100,50,150,0.04);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card::before {
+    content:''; position:absolute; top:-50px; right:-50px;
+    width:200px; height:200px;
+    background:radial-gradient(circle,rgba(244,114,182,0.10),transparent 70%);
+    border-radius:50%; pointer-events:none;
+  }
+  .card::after {
+    content:''; position:absolute; bottom:-50px; left:-50px;
+    width:200px; height:200px;
+    background:radial-gradient(circle,rgba(129,140,248,0.08),transparent 70%);
+    border-radius:50%; pointer-events:none;
+  }
+  .corner-gem {
+    position:absolute; width:6px; height:6px;
+    background:#c084fc; transform:rotate(45deg);
+    box-shadow:0 0 8px #c084fc;
+  }
+  .corner-gem.tl{top:14px;left:14px}
+  .corner-gem.tr{top:14px;right:14px}
+  .corner-gem.bl{bottom:14px;left:14px}
+  .corner-gem.br{bottom:14px;right:14px}
+
+  .letter-opening {
+    color:#f0abfc; font-size:15px; font-style:italic;
+    margin-bottom:20px; letter-spacing:0.5px;
+  }
+  .letter-body { color:#e9d5ff; font-size:15.5px; line-height:1.95; margin-bottom:20px; }
+  .letter-body p { margin-bottom:16px; }
+  .highlight        { color:#f472b6; font-style:italic; font-weight:700; }
+  .highlight-purple { color:#d8b4fe; font-style:italic; }
+
+  .bayonetta-quote {
+    background:rgba(192,132,252,0.07);
+    border-left:2px solid #c084fc;
+    border-radius:0 8px 8px 0;
+    padding:14px 20px 14px 24px;
+    margin:22px 0;
+    font-style:italic; color:#f0abfc; font-size:14.5px;
+    position:relative;
+  }
+  .bayonetta-quote::before {
+    content:'❝'; position:absolute; top:-10px; left:12px;
+    font-size:26px; color:#c084fc; line-height:1;
+  }
+
+  .monster-high-row {
+    display:flex; justify-content:center;
+    gap:14px; margin:22px 0; flex-wrap:wrap;
+  }
+  .mh-badge {
+    background:rgba(244,114,182,0.08);
+    border:0.5px solid rgba(244,114,182,0.4);
+    border-radius:30px; padding:6px 16px;
+    font-size:13px; color:#f9a8d4;
+    letter-spacing:1px;
+    display:flex; align-items:center; gap:6px;
+    transition:all 0.3s ease; cursor:default;
+  }
+  .mh-badge:hover {
+    background:rgba(244,114,182,0.18);
+    box-shadow:0 0 14px rgba(244,114,182,0.3);
+    transform:translateY(-2px);
+  }
+
+  .letter-closing { color:#d8b4fe; font-size:15px; font-style:italic; margin-top:24px; margin-bottom:8px; }
+  .signature {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:17px; color:#f472b6;
+    text-shadow:0 0 14px rgba(244,114,182,0.5);
+    margin-top:12px;
+  }
+
+  /* HEARTS */
+  .heart-burst { text-align:center; margin-top:30px; opacity:0; animation:fadeUp 1s 1.6s ease forwards; }
+  .hearts-row { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+  .heart-item {
+    font-size:18px;
+    animation:heartbeat 2s ease-in-out infinite;
+    filter:drop-shadow(0 0 6px #f472b6);
+  }
+  .heart-item:nth-child(2){animation-delay:.3s;font-size:24px}
+  .heart-item:nth-child(3){animation-delay:.6s}
+  .heart-item:nth-child(4){animation-delay:.9s;font-size:20px}
+  .heart-item:nth-child(5){animation-delay:1.2s}
+  @keyframes heartbeat {
+    0%,100%{transform:scale(1)} 50%{transform:scale(1.22)}
+  }
+
+  .bat-row {
+    display:flex; justify-content:space-between;
+    padding:0 20px; margin-top:18px;
+    opacity:0.28; font-size:16px;
+  }
+  .bat{animation:batfly 4s ease-in-out infinite}
+  .bat:nth-child(2){animation-delay:1.5s}
+  @keyframes batfly{
+    0%,100%{transform:translateY(0) rotate(-5deg)}
+    50%{transform:translateY(-8px) rotate(5deg)}
+  }
+  .bottom-text {
+    text-align:center; margin-top:12px;
+    color:rgba(216,180,254,0.4);
+    font-size:11px; letter-spacing:4px; text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- YouTube embed oculto – autoplay al cargar -->
+<iframe id="yt-frame"
+  src="https://www.youtube.com/embed/EV6E13xODyA?enablejsapi=1&autoplay=1&loop=1&playlist=EV6E13xODyA" 
+  allow="autoplay; encrypted-media"
+  allowfullscreen>
+</iframe>
+
+<!-- Botón replay y pausa -->
+<div class="music-bar">
+  <span class="music-label">♪ fly me to the moon</span>
+  <div class="pause-btn" id="pauseBtn" title="Pausa\nReproducir" onclick="togglePausePlay()">
+    <svg id="pauseIcon" viewBox="0 0 24 24" width="20" height="20" fill="none"
+         stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="4" width="4" height="16"/>
+      <rect x="14" y="4" width="4" height="16"/>
+    </svg>
+    <svg id="playIcon" viewBox="0 0 24 24" width="20" height="20" fill="#c084fc"
+         stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  </div>
+  <div class="replay-btn" id="replayBtn" title="Repetir" onclick="replayMusic()">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+         stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1 4 1 10 7 10"/>
+      <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+    </svg>
+  </div>
+</div>
+
+<div class="stars" id="stars"></div>
+
+<div class="page">
+
+  <!-- IMAGEN BAYONETTA -->
+  <div class="bayo-wrap">
+    <img
+      class="bayo-img"
+      src="https://images2.alphacoders.com/590/thumb-1920-590551.jpg"
+      alt="Bayonetta"
+    />
+  </div>
+
+  <!-- TÍTULO -->
+  <div class="top-decoration">
+    <div class="skull-row">
+      <span class="skull">💀</span>
+      <span class="skull" style="font-size:28px;filter:drop-shadow(0 0 8px #f472b6)">🌙</span>
+      <span class="skull">💀</span>
+    </div>
+    <div class="title-name">Mi Luna</div>
+    <div class="subtitle">para la chica más unica del universo</div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-gem"></div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- CARTA -->
+  <div class="card">
+    <div class="corner-gem tl"></div>
+    <div class="corner-gem tr"></div>
+    <div class="corner-gem bl"></div>
+    <div class="corner-gem br"></div>
+
+    <div class="letter-opening">Querida Luna ✨</div>
+
+    <div class="letter-body">
+      <p>
+        En un mundo lleno de gente ordinaria, tú apareciste con la energía de una
+        <span class="highlight">Umbra Witch</span> —poderosa, misteriosa, imposible de ignorar.
+        Desde el primer momento supe que eras diferente: tienes ese fuego oscuro que
+        solo tu puedes  tener para cautivar, poderosa, fuerte, no hace falta que te lo digan,
+        lo sabes!!.
+      </p>
+
+      <div class="bayonetta-quote">
+        La oscuridad no es algo que temer — es el poder de quienes se atreven
+        a ser completamente ellas mismas. Y tú, Luna, eres exactamente eso.
+      </div>
+
+      <p>
+        Me encanta cómo puedes ser <span class="highlight-purple">fieramente tú misma</span>,
+        sin disculpas, sin filtros. Igual que las chicas de Monster High que supieron desde
+        siempre que ser diferente no es una maldición — es un
+        <span class="highlight">superpoder</span>.
+      </p>
+
+      <p>
+        Hay algo en ti que me hace querer conocerte más, escuchar tus ideas, reír contigo,
+        existir cerca de ti. Cada conversación contigo se siente como descubrir un nuevo
+        capítulo de algo que no quiero que termine.
+      </p>
+    </div>
+
+    <div class="monster-high-row">
+      <div class="mh-badge"><span>🖤</span> Fieramente única</div>
+      <div class="mh-badge"><span>🔮</span> Mágica &amp; poderosa</div>
+      <div class="mh-badge"><span>💜</span> Irreemplazable</div>
+    </div>
+
+    <div class="letter-body">
+      <p>
+        Así que aquí estoy, escribiéndote con toda la valentía de quien enfrenta lo
+        imposible — diciéndote que me gustas mucho. Que me alegra que existas.
+        Que ojalá pueda ser parte de tu historia, aunque sea en un pequeño capítulo.
+      </p>
+    </div>
+
+    <div class="letter-closing">Con todo el cariño del universo que siento por ti,</div>
+    <div class="signature">~ para Luna, siempre ~</div>
+  </div>
+
+  <div class="heart-burst">
+    <div class="hearts-row">
+      <span class="heart-item">🖤</span>
+      <span class="heart-item">💜</span>
+      <span class="heart-item">🖤</span>
+      <span class="heart-item">💗</span>
+      <span class="heart-item">🖤</span>
+    </div>
+  </div>
+
+  <div class="bat-row">
+    <span class="bat">🦇</span>
+    <span class="bat">🦇</span>
+  </div>
+
+  <div class="bottom-text">forever &amp; always · dark &amp; magical</div>
+</div>
+
+<script>
+  /* ESTRELLAS */
+  const sc = document.getElementById('stars');
+  for (let i = 0; i < 95; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const big = Math.random() > 0.82;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${1.5+Math.random()*3}s;width:${big?3:2}px;height:${big?3:2}px;opacity:${Math.random()*0.6+0.1};`;
+    sc.appendChild(s);
+  }
+
+  /* YouTube Player API */
+  let player;
+  let isPlaying = true;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('yt-frame', {
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    event.target.playVideo();
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+      isPlaying = true;
+      updatePauseIcon();
+    } else if (event.data == YT.PlayerState.PAUSED) {
+      isPlaying = false;
+      updatePauseIcon();
+    }
+  }
+
+  /* PAUSE/PLAY */
+  function togglePausePlay() {
+    if (player) {
+      if (isPlaying) {
+        player.pauseVideo();
+        isPlaying = false;
+      } else {
+        player.playVideo();
+        isPlaying = true;
+      }
+      updatePauseIcon();
+    }
+  }
+
+  function updatePauseIcon() {
+    const pauseIcon = document.getElementById('pauseIcon');
+    const playIcon = document.getElementById('playIcon');
+    if (isPlaying) {
+      pauseIcon.style.display = 'block';
+      playIcon.style.display = 'none';
+    } else {
+      pauseIcon.style.display = 'none';
+      playIcon.style.display = 'block';
+    }
+  }
+
+  /* REPLAY */
+  function replayMusic() {
+    const btn = document.getElementById('replayBtn');
+    btn.classList.add('spin');
+    setTimeout(() => btn.classList.remove('spin'), 520);
+    if (player) {
+      player.seekTo(0);
+      player.playVideo();
+      isPlaying = true;
+      updatePauseIcon();
+    }
+  }
+
+  /* Load YouTube API */
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+</script>
+</body>
+</html>
