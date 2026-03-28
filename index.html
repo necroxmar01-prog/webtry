@@ -3,518 +3,598 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Para Luna 🖤</title>
+<title>Lo siento, Luna 🐾</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Petit+Formal+Script&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --gold:      #f5a623;
+    --amber:     #d97706;
+    --deep-gold: #92400e;
+    --orange:    #fb923c;
+    --fur:       #c2410c;
+    --black:     #080500;
+    --dark:      #120a00;
+    --mid:       #1e1000;
+    --moon:      #fde68a;
+    --cream:     #fef3c7;
+    --lilac:     #a78bfa;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
-    background: #0a0010;
+    background: var(--black);
     min-height: 100vh;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ctext y='16' font-size='16'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E") 10 10, auto;
   }
 
-  /* STARS */
-  .stars { position: fixed; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 0; }
-  .star {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
-    animation: twinkle var(--d) ease-in-out infinite alternate;
-  }
-  @keyframes twinkle {
-    from { opacity: 0.1; transform: scale(0.8); }
-    to   { opacity: 1;   transform: scale(1.3); }
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 55% at 15% 5%,  rgba(245,166,35,0.15) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 70% at 85% 95%,  rgba(124,58,237,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 50%,  rgba(30,16,0,0.9)    0%, transparent 100%);
   }
 
-  /* MUSIC PLAYER */
-  #yt-frame { display: none; }
-
-  .music-bar {
-    position: fixed;
-    bottom: 22px; right: 22px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  /* ── MOON GLOW ── */
+  .moon-bg {
+    position:fixed; top:-120px; left:50%; transform:translateX(-50%);
+    width:340px; height:340px; border-radius:50%;
+    background: radial-gradient(circle, rgba(253,230,138,0.12) 0%, rgba(245,166,35,0.05) 40%, transparent 70%);
+    pointer-events:none; z-index:0;
+    animation: moonpulse 5s ease-in-out infinite;
   }
-  .music-label {
-    font-size: 11px;
-    color: #c084fc;
-    letter-spacing: 2px;
-    font-family: 'Cinzel Decorative', cursive;
-    opacity: 0;
-    animation: appear 1s 2.5s forwards;
-    white-space: nowrap;
-  }
-  @keyframes appear { to { opacity: 0.75; } }
-
-  .replay-btn, .pause-btn {
-    background: rgba(15,0,30,0.92);
-    border: 0.5px solid rgba(244,114,182,0.5);
-    border-radius: 50%;
-    width: 48px; height: 48px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: appear 1s 2.5s forwards;
-    box-shadow: 0 0 18px rgba(192,132,252,0.25);
-  }
-  .replay-btn:hover, .pause-btn:hover {
-    border-color: #f472b6;
-    box-shadow: 0 0 24px rgba(244,114,182,0.45);
-    transform: scale(1.1);
-  }
-  .replay-btn.spin svg { animation: spinonce 0.5s ease; }
-  @keyframes spinonce { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* PAGE */
-  .page {
-    position: relative;
-    z-index: 1;
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 36px 20px 80px;
+  @keyframes moonpulse {
+    0%,100%{ transform:translateX(-50%) scale(1);   opacity:0.8; }
+    50%    { transform:translateX(-50%) scale(1.08); opacity:1; }
   }
 
-  /* BAYONETTA IMAGE */
-  .bayo-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
-    opacity: 0;
-    animation: bayoIn 1.6s 0.2s ease forwards;
-    border-radius: 16px;
-    overflow: hidden;
+  .particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .p {
+    position:absolute; border-radius:50%;
+    animation: drift var(--t) ease-in-out infinite alternate;
   }
-  @keyframes bayoIn {
-    0%   { opacity: 0; transform: translateY(40px) scale(0.94); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .bayo-img {
-    width: 100%;
-    max-height: 440px;
-    object-fit: cover;
-    object-position: center top;
-    border-radius: 16px;
-    border: 0.5px solid rgba(192,132,252,0.4);
-    animation: glowPulse 3.5s ease-in-out infinite;
-  }
-  @keyframes glowPulse {
-    0%,100% {
-      filter: drop-shadow(0 0 14px rgba(192,132,252,0.45))
-              drop-shadow(0 0 30px rgba(244,114,182,0.2));
-    }
-    50% {
-      filter: drop-shadow(0 0 32px rgba(244,114,182,0.65))
-              drop-shadow(0 0 60px rgba(192,132,252,0.5));
-    }
+  @keyframes drift {
+    from { transform:translate(0,0);                   opacity:0.25; }
+    to   { transform:translate(var(--tx),var(--ty));   opacity:0.9; }
   }
 
-  /* TOP DECO */
-  .top-decoration {
-    text-align: center;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeDown 1s 1s ease forwards;
+  .paw-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .paw {
+    position:absolute; font-size:var(--sz); opacity:0.07;
+    animation: pawdrift var(--pt) ease-in-out infinite alternate;
   }
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .skull-row { display: flex; justify-content: center; gap: 14px; margin-bottom: 10px; }
-  .skull {
-    font-size: 22px;
-    filter: drop-shadow(0 0 6px #c084fc);
-    animation: float 3s ease-in-out infinite;
-  }
-  .skull:nth-child(2) { animation-delay: 0.5s; }
-  .skull:nth-child(3) { animation-delay: 1s; }
-  @keyframes float {
-    0%,100% { transform: translateY(0); }
-    50%     { transform: translateY(-7px); }
-  }
-  .title-name {
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: clamp(30px, 7vw, 52px);
-    background: linear-gradient(135deg, #f0abfc, #c084fc, #818cf8, #f472b6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 6px;
-    background-size: 300% 300%;
-    animation: shimmer 3s linear infinite;
-  }
-  @keyframes shimmer {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  .subtitle {
-    color: #d8b4fe;
-    font-size: 12px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    font-style: italic;
-    opacity: 0.8;
-    margin-top: 6px;
+  @keyframes pawdrift {
+    from { transform:translate(0,0) rotate(var(--r1)); }
+    to   { transform:translate(var(--px),var(--py)) rotate(var(--r2)); }
   }
 
-  /* DIVIDER */
-  .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; opacity: 0.5; }
-  .divider-line {
-    flex: 1; height: 0.5px;
-    background: linear-gradient(to right, transparent, #c084fc, transparent);
-  }
-  .divider-gem {
-    width: 8px; height: 8px;
-    background: #f472b6;
-    transform: rotate(45deg);
-    box-shadow: 0 0 10px #f472b6;
+  /* ══ HEADER ══ */
+  .header {
+    position:relative; z-index:2;
+    display:flex; flex-direction:column; align-items:center;
+    padding:56px 20px 0;
   }
 
-  /* CARD */
-  .card {
-    background: linear-gradient(135deg, rgba(20,5,40,0.97), rgba(10,0,25,0.99));
-    border: 0.5px solid rgba(192,132,252,0.4);
-    border-radius: 18px;
-    padding: 36px 32px;
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    animation: fadeUp 1.2s 1.2s ease forwards;
-    box-shadow: 0 0 50px rgba(192,132,252,0.07), inset 0 0 60px rgba(100,50,150,0.04);
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .card::before {
-    content:''; position:absolute; top:-50px; right:-50px;
-    width:200px; height:200px;
-    background:radial-gradient(circle,rgba(244,114,182,0.10),transparent 70%);
-    border-radius:50%; pointer-events:none;
-  }
-  .card::after {
-    content:''; position:absolute; bottom:-50px; left:-50px;
-    width:200px; height:200px;
-    background:radial-gradient(circle,rgba(129,140,248,0.08),transparent 70%);
-    border-radius:50%; pointer-events:none;
-  }
-  .corner-gem {
-    position:absolute; width:6px; height:6px;
-    background:#c084fc; transform:rotate(45deg);
-    box-shadow:0 0 8px #c084fc;
-  }
-  .corner-gem.tl{top:14px;left:14px}
-  .corner-gem.tr{top:14px;right:14px}
-  .corner-gem.bl{bottom:14px;left:14px}
-  .corner-gem.br{bottom:14px;right:14px}
-
-  .letter-opening {
-    color:#f0abfc; font-size:15px; font-style:italic;
-    margin-bottom:20px; letter-spacing:0.5px;
-  }
-  .letter-body { color:#e9d5ff; font-size:15.5px; line-height:1.95; margin-bottom:20px; }
-  .letter-body p { margin-bottom:16px; }
-  .highlight        { color:#f472b6; font-style:italic; font-weight:700; }
-  .highlight-purple { color:#d8b4fe; font-style:italic; }
-
-  .bayonetta-quote {
-    background:rgba(192,132,252,0.07);
-    border-left:2px solid #c084fc;
-    border-radius:0 8px 8px 0;
-    padding:14px 20px 14px 24px;
-    margin:22px 0;
-    font-style:italic; color:#f0abfc; font-size:14.5px;
+  .moon-crest {
     position:relative;
+    width: min(360px, 90vw);
+    padding: 48px 36px 40px;
+    text-align:center;
+    background: linear-gradient(160deg, rgba(30,16,0,0.97), rgba(8,5,0,0.99));
+    border: 1px solid rgba(245,166,35,0.45);
+    border-radius: 50% 50% 12px 12px / 30% 30% 12px 12px;
+    box-shadow:
+      0 0 50px rgba(245,166,35,0.18),
+      inset 0 0 40px rgba(217,119,6,0.06);
+    animation: crescent-glow 4s ease-in-out infinite;
   }
-  .bayonetta-quote::before {
-    content:'❝'; position:absolute; top:-10px; left:12px;
-    font-size:26px; color:#c084fc; line-height:1;
-  }
-
-  .monster-high-row {
-    display:flex; justify-content:center;
-    gap:14px; margin:22px 0; flex-wrap:wrap;
-  }
-  .mh-badge {
-    background:rgba(244,114,182,0.08);
-    border:0.5px solid rgba(244,114,182,0.4);
-    border-radius:30px; padding:6px 16px;
-    font-size:13px; color:#f9a8d4;
-    letter-spacing:1px;
-    display:flex; align-items:center; gap:6px;
-    transition:all 0.3s ease; cursor:default;
-  }
-  .mh-badge:hover {
-    background:rgba(244,114,182,0.18);
-    box-shadow:0 0 14px rgba(244,114,182,0.3);
-    transform:translateY(-2px);
+  @keyframes crescent-glow {
+    0%,100%{ box-shadow: 0 0 50px rgba(245,166,35,0.18), inset 0 0 40px rgba(217,119,6,0.06); }
+    50%    { box-shadow: 0 0 90px rgba(245,166,35,0.35), inset 0 0 70px rgba(217,119,6,0.12); }
   }
 
-  .letter-closing { color:#d8b4fe; font-size:15px; font-style:italic; margin-top:24px; margin-bottom:8px; }
+  .claw-deco {
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    display:flex; gap:3px;
+  }
+  .claw-line {
+    width:1.5px; background:linear-gradient(to bottom, rgba(245,166,35,0.7), transparent);
+    border-radius:2px;
+  }
+
+  .moon-icon {
+    font-size:54px; display:block; margin-bottom:10px;
+    filter:drop-shadow(0 0 18px rgba(253,230,138,0.7));
+    animation: moon-bounce 3s ease-in-out infinite;
+  }
+  @keyframes moon-bounce {
+    0%,100%{ transform:translateY(0) rotate(-5deg); }
+    50%    { transform:translateY(-8px) rotate(5deg); }
+  }
+
+  .sorry-title {
+    font-family:'Cinzel Decorative', cursive;
+    font-size:clamp(22px,6vw,40px);
+    letter-spacing:4px; line-height:1.2;
+    background: linear-gradient(135deg, var(--moon), var(--gold), var(--orange));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; background-size:200% 200%;
+    animation: gold-shimmer 3s linear infinite;
+  }
+  @keyframes gold-shimmer {
+    0%  { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100%{ background-position:0% 50%; }
+  }
+
+  .sorry-sub {
+    font-family:'Petit Formal Script', cursive;
+    font-size:clamp(14px,3.5vw,19px);
+    color:var(--moon); margin-top:10px; opacity:0.8;
+    text-shadow:0 0 10px rgba(253,230,138,0.4);
+  }
+
+  .ribbon {
+    display:flex; align-items:center; gap:14px;
+    margin:26px auto 0; width:min(540px,92vw);
+    position:relative; z-index:2;
+  }
+  .r-line {
+    flex:1; height:1px;
+    background:linear-gradient(to right, transparent, var(--amber), transparent);
+  }
+  .r-icon { font-size:16px; filter:drop-shadow(0 0 5px var(--gold)); }
+
+  /* ══ CARD ══ */
+  .page {
+    position:relative; z-index:2;
+    max-width:640px; margin:0 auto;
+    padding:26px 16px 90px;
+  }
+
+  .card {
+    background: linear-gradient(150deg,
+      rgba(24,12,0,0.98) 0%,
+      rgba(10,6,0,0.99)  55%,
+      rgba(28,14,0,0.97) 100%);
+    border:1px solid rgba(245,166,35,0.28);
+    border-radius:6px 6px 22px 22px;
+    padding:42px 34px;
+    position:relative; overflow:hidden;
+    box-shadow:
+      0 0 0 1px rgba(146,64,14,0.12),
+      0 22px 65px rgba(0,0,0,0.75),
+      inset 0 1px 0 rgba(253,230,138,0.08);
+  }
+
+  .card::before, .card::after { content:''; position:absolute; width:70px; height:70px; pointer-events:none; }
+  .card::before { top:0;left:0;  border-top:1.5px solid var(--amber); border-left:1.5px solid var(--amber);  border-radius:6px 0 0 0; }
+  .card::after  { top:0;right:0; border-top:1.5px solid var(--amber); border-right:1.5px solid var(--amber); border-radius:0 6px 0 0; }
+  .claw-bl, .claw-br { position:absolute; width:70px; height:70px; pointer-events:none; }
+  .claw-bl { bottom:0;left:0;  border-bottom:1.5px solid var(--amber); border-left:1.5px solid var(--amber);  border-radius:0 0 0 20px; }
+  .claw-br { bottom:0;right:0; border-bottom:1.5px solid var(--amber); border-right:1.5px solid var(--amber); border-radius:0 0 20px 0; }
+
+  .card-glow {
+    position:absolute; top:-80px; left:50%; transform:translateX(-50%);
+    width:320px; height:220px;
+    background:radial-gradient(ellipse, rgba(245,166,35,0.07) 0%, transparent 70%);
+    pointer-events:none;
+  }
+
+  /* ── BADGE ── */
+  .claw-badge {
+    display:flex; align-items:center; gap:12px;
+    background:rgba(217,119,6,0.08);
+    border:1px solid rgba(245,166,35,0.22);
+    border-radius:60px;
+    padding:10px 20px 10px 12px;
+    width:fit-content; margin:0 auto 30px;
+  }
+  .badge-icon {
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg, var(--fur), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; flex-shrink:0;
+    box-shadow:0 0 14px rgba(245,166,35,0.4);
+  }
+  .badge-info {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:10px; color:var(--moon); letter-spacing:2px; line-height:1.5;
+  }
+  .badge-info span { display:block; font-size:8px; color:var(--gold); opacity:0.7; letter-spacing:1px; }
+
+  /* ── LETTER ── */
+  .letter-opening {
+    font-family:'Petit Formal Script',cursive;
+    font-size:clamp(19px,4vw,28px);
+    color:var(--moon); margin-bottom:24px;
+    text-shadow:0 0 14px rgba(253,230,138,0.35);
+  }
+  .letter-body {
+    color:var(--cream); font-size:clamp(14.5px,2vw,16.5px);
+    line-height:2.0; font-style:italic;
+  }
+  .letter-body p { margin-bottom:20px; }
+  .hl-gold   { color:var(--gold);   font-style:normal; font-weight:600; }
+  .hl-moon   { color:var(--moon); }
+  .hl-orange { color:var(--orange); font-style:normal; font-weight:600; }
+
+  /* ── QUOTE ── */
+  .claw-quote {
+    position:relative;
+    background:linear-gradient(135deg, rgba(146,64,14,0.10), rgba(245,166,35,0.05));
+    border:1px solid rgba(245,166,35,0.18);
+    border-radius:0 14px 14px 14px;
+    padding:22px 24px 20px 30px;
+    margin:26px 0;
+    font-style:italic; color:var(--moon);
+    font-size:clamp(13.5px,2vw,15.5px); line-height:1.85;
+  }
+  .claw-quote::before {
+    content:''; position:absolute; top:-1px; left:0;
+    width:4px; height:100%;
+    background:linear-gradient(to bottom, var(--gold), var(--amber));
+    border-radius:4px 0 0 4px;
+  }
+  .claw-scratch {
+    position:absolute; top:-16px; left:18px; display:flex; gap:2px;
+  }
+  .cs { width:1px; background:linear-gradient(to bottom,var(--gold),transparent); border-radius:1px; }
+  .claw-quote .attr {
+    display:block; margin-top:10px;
+    font-size:10px; color:var(--amber);
+    letter-spacing:2.5px; text-transform:uppercase; font-style:normal; opacity:0.75;
+  }
+
+  /* ── STEPS ── */
+  .steps { display:flex; flex-direction:column; gap:13px; margin:28px 0; }
+  .step {
+    display:flex; align-items:flex-start; gap:15px;
+    background:rgba(245,166,35,0.04);
+    border:1px solid rgba(245,166,35,0.10);
+    border-radius:12px; padding:16px 18px;
+    transition:all 0.35s ease; cursor:default;
+  }
+  .step:hover {
+    background:rgba(245,166,35,0.09);
+    border-color:rgba(245,166,35,0.28);
+    transform:translateX(5px);
+    box-shadow:-5px 0 22px rgba(245,166,35,0.10);
+  }
+  .step-icon { font-size:22px; flex-shrink:0; margin-top:2px; filter:drop-shadow(0 0 6px var(--gold)); }
+  .step-text { font-size:14px; color:var(--cream); line-height:1.78; font-style:italic; }
+  .step-label {
+    display:block; font-family:'Cinzel Decorative',cursive;
+    font-size:9px; color:var(--amber); letter-spacing:2px;
+    margin-bottom:5px; font-style:normal;
+  }
+
+  /* ── MEMORY ── */
+  .memory {
+    border:1px solid rgba(245,166,35,0.18);
+    border-radius:16px; padding:22px 20px 22px 24px;
+    margin:28px 0; position:relative; overflow:hidden;
+  }
+  .memory::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg, rgba(146,64,14,0.07), rgba(245,166,35,0.03));
+    pointer-events:none;
+  }
+  .memory-title {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:10px; color:var(--amber); letter-spacing:3px; text-transform:uppercase;
+    margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  }
+  .memory-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,rgba(245,166,35,0.4),transparent); }
+  .memory-item {
+    display:flex; align-items:center; gap:10px;
+    color:var(--cream); font-size:14px; font-style:italic;
+    padding:7px 0; border-bottom:1px solid rgba(245,166,35,0.07);
+  }
+  .memory-item:last-child { border-bottom:none; }
+  .memory-item::before { content:'🐾'; font-style:normal; font-size:12px; }
+
+  /* ── PROMISE ── */
+  .promise-wrap { text-align:center; margin:30px 0 24px; }
+  .promise-label {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:10px; color:var(--amber); letter-spacing:4px; display:block; margin-bottom:16px;
+  }
+  .promise-text {
+    font-family:'Petit Formal Script',cursive;
+    font-size:clamp(18px,4.5vw,26px); color:var(--moon); line-height:1.65;
+    text-shadow:0 0 18px rgba(253,230,138,0.28);
+  }
+
+  /* ── DIVIDER ── */
+  .divider { display:flex; align-items:center; gap:10px; margin:28px 0 22px; opacity:0.55; }
+  .d-line  { flex:1; height:0.5px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+  .d-ic { font-size:14px; filter:drop-shadow(0 0 5px var(--gold)); }
+
+  /* ── SIGN ── */
+  .letter-closing {
+    font-family:'Petit Formal Script',cursive;
+    font-size:clamp(15px,3vw,19px); color:var(--cream); opacity:0.8; margin-bottom:6px;
+  }
   .signature {
     font-family:'Cinzel Decorative',cursive;
-    font-size:17px; color:#f472b6;
-    text-shadow:0 0 14px rgba(244,114,182,0.5);
-    margin-top:12px;
+    font-size:clamp(14px,3.5vw,20px); color:var(--gold); letter-spacing:2px; margin-top:10px;
+    text-shadow:0 0 20px rgba(245,166,35,0.5);
   }
 
-  /* HEARTS */
-  .heart-burst { text-align:center; margin-top:30px; opacity:0; animation:fadeUp 1s 1.6s ease forwards; }
-  .hearts-row { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
-  .heart-item {
-    font-size:18px;
-    animation:heartbeat 2s ease-in-out infinite;
-    filter:drop-shadow(0 0 6px #f472b6);
+  /* ── FOOTER ── */
+  .heart-footer { text-align:center; margin-top:32px; }
+  .hearts-row { display:flex; justify-content:center; gap:12px; }
+  .h { font-size:20px; animation:hb 2.2s ease-in-out infinite; filter:drop-shadow(0 0 7px var(--gold)); }
+  .h:nth-child(2){ animation-delay:.28s; font-size:28px; }
+  .h:nth-child(3){ animation-delay:.56s; }
+  .h:nth-child(4){ animation-delay:.84s; font-size:24px; }
+  .h:nth-child(5){ animation-delay:1.12s; }
+  @keyframes hb { 0%,100%{transform:scale(1)} 50%{transform:scale(1.22)} }
+  .mh-footer {
+    margin-top:20px; font-family:'Cinzel Decorative',cursive;
+    font-size:9px; color:rgba(245,166,35,0.3); letter-spacing:5px; text-transform:uppercase;
+    display:flex; align-items:center; justify-content:center; gap:10px;
   }
-  .heart-item:nth-child(2){animation-delay:.3s;font-size:24px}
-  .heart-item:nth-child(3){animation-delay:.6s}
-  .heart-item:nth-child(4){animation-delay:.9s;font-size:20px}
-  .heart-item:nth-child(5){animation-delay:1.2s}
-  @keyframes heartbeat {
-    0%,100%{transform:scale(1)} 50%{transform:scale(1.22)}
-  }
+  .mh-footer::before,.mh-footer::after { content:''; width:28px; height:0.5px; background:rgba(245,166,35,0.2); }
 
-  .bat-row {
-    display:flex; justify-content:space-between;
-    padding:0 20px; margin-top:18px;
-    opacity:0.28; font-size:16px;
+  /* ── MUSIC ── */
+  #yt-frame { display:none; }
+  .music-bar { position:fixed; bottom:20px; right:20px; z-index:100; display:flex; align-items:center; gap:10px; }
+  .music-label { font-size:10px; color:var(--moon); letter-spacing:2px; font-family:'Cinzel Decorative',cursive; opacity:0.65; white-space:nowrap; }
+  .ctrl-btn {
+    background:rgba(8,5,0,0.92); border:0.5px solid rgba(245,166,35,0.38);
+    border-radius:50%; width:46px; height:46px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.3s; box-shadow:0 0 14px rgba(146,64,14,0.25);
   }
-  .bat{animation:batfly 4s ease-in-out infinite}
-  .bat:nth-child(2){animation-delay:1.5s}
-  @keyframes batfly{
-    0%,100%{transform:translateY(0) rotate(-5deg)}
-    50%{transform:translateY(-8px) rotate(5deg)}
-  }
-  .bottom-text {
-    text-align:center; margin-top:12px;
-    color:rgba(216,180,254,0.4);
-    font-size:11px; letter-spacing:4px; text-transform:uppercase;
-  }
+  .ctrl-btn:hover { border-color:var(--gold); box-shadow:0 0 24px rgba(245,166,35,0.45); transform:scale(1.1); }
+  .ctrl-btn.spin svg { animation:sp 0.5s ease; }
+  @keyframes sp { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+  /* ── ENTRANCE ── */
+  .header       { animation:fadeDown 1s 0.1s both; }
+  .card         { animation:fadeUp  1.3s 0.4s both; }
+  .heart-footer { animation:fadeUp  1s   0.7s both; }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(32px)}  to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
 
-<!-- YouTube embed oculto – autoplay al cargar -->
 <iframe id="yt-frame"
-  src="https://www.youtube.com/embed/EV6E13xODyA?enablejsapi=1&autoplay=1&loop=1&playlist=EV6E13xODyA" 
-  allow="autoplay; encrypted-media"
-  allowfullscreen>
+  src="https://www.youtube.com/embed/EV6E13xODyA?enablejsapi=1&autoplay=1&loop=1&playlist=EV6E13xODyA"
+  allow="autoplay; encrypted-media" allowfullscreen>
 </iframe>
 
-<!-- Botón replay y pausa -->
+<div class="moon-bg"></div>
+<div class="particles" id="particles"></div>
+<div class="paw-layer"  id="paws"></div>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <div class="moon-crest">
+    <div class="claw-deco">
+      <div class="claw-line" style="height:18px;transform:rotate(-12deg)"></div>
+      <div class="claw-line" style="height:24px"></div>
+      <div class="claw-line" style="height:20px;transform:rotate(8deg)"></div>
+      <div class="claw-line" style="height:14px;transform:rotate(16deg)"></div>
+    </div>
+    <span class="moon-icon">🌕</span>
+    <div class="sorry-title">Lo Siento,<br>Luna</div>
+    <div class="sorry-sub">con toda la fiereza de mi corazón</div>
+  </div>
+
+  <div class="ribbon">
+    <div class="r-line"></div>
+    <span class="r-icon">🐾</span>
+    <span class="r-icon" style="font-size:20px">🌙</span>
+    <span class="r-icon">🐾</span>
+    <div class="r-line"></div>
+  </div>
+</div>
+
+<!-- ═══ CARD ═══ -->
+<div class="page">
+  <div class="card">
+    <div class="card-glow"></div>
+    <div class="claw-bl"></div>
+    <div class="claw-br"></div>
+
+    <div class="claw-badge">
+      <div class="badge-icon">🐺</div>
+    </div>
+
+    <div class="letter-opening">Mi querida Luna,</div>
+
+    <div class="letter-body">
+      <p>
+        Clawdeen Wolf nunca se disculpaba a medias. Si algo tenía esa chica,
+        era la valentía de enfrentar lo que sentía —sin excusas, sin esconderse—
+        con la misma fiereza con que enfrentaba todo lo demás.
+        Hoy yo hago lo mismo: <span class="hl-gold">vengo a decirte la verdad.</span>
+      </p>
+    </div>
+
+    <div class="claw-quote">
+      <div class="claw-scratch">
+        <div class="cs" style="height:20px;transform:rotate(-10deg)"></div>
+        <div class="cs" style="height:26px"></div>
+        <div class="cs" style="height:22px;transform:rotate(8deg)"></div>
+        <div class="cs" style="height:16px;transform:rotate(15deg)"></div>
+      </div>
+      Ser feroz no significa nunca equivocarse —
+      significa tener el coraje de mirar a quien amas a los ojos
+      y decir: me equivoqué, y tú mereces más.
+      <span class="attr">— en el espíritu de Clawdeen Wolf 🐾</span>
+    </div>
+
+    <div class="letter-body">
+      <p>
+        Me equivoqué contigo, Luna. Y no voy a envolverlo en excusas
+        ni en magia de luna llena. Solo sé que <span class="hl-moon">lo que siento por ti
+        es demasiado real</span> como para dejarlo lastimado sin hacer nada.
+      </p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <span class="step-icon">🌕</span>
+        <div class="step-text">
+          <span class="step-label">Lo que reconozco</span>
+          Fallé. Y lo sé aunque duela decirlo. No busco justificaciones —
+          solo que sepas que me importa lo que te hice sentir.
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-icon">🐾</span>
+        <div class="step-text">
+          <span class="step-label">Lo que me importa</span>
+          Tú y tu paz. Tu sonrisa. Lo que sientes cuando estás bien.
+          Eso siempre va a valer más que cualquier orgullo mío.
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-icon">🌙</span>
+        <div class="step-text">
+          <span class="step-label">Lo que prometo</span>
+          Cuidarte mejor. Aprender de esto. Ser alguien que merece estar
+          cerca de ti — porque tú te mereces eso y más.
+        </div>
+      </div>
+    </div>
+
+    <div class="memory">
+      <div class="memory-title">lo que llevo conmigo 🌕</div>
+      <div class="memory-item">La forma en que ves las cosas que nadie más nota</div>
+      <div class="memory-item">Cuando te reíste de algo que solo nosotros entendimos</div>
+      <div class="memory-item">Lo mucho que me gusta escucharte cuando hablas de lo que amas</div>
+      <div class="memory-item">Que cada momento contigo se siente diferente a todo</div>
+    </div>
+
+    <div class="letter-body">
+      <p>
+        Clawdeen siempre decía que las lobas <span class="hl-orange">protegen lo que de verdad
+        les importa</span>. Yo quiero proteger esto — lo que existe entre tú y yo.
+        Aunque haya que reconstruirlo desde cero, quiero intentarlo.
+      </p>
+    </div>
+
+    <div class="promise-wrap">
+      <span class="promise-label">✦ mi promesa ✦</span>
+      <div class="promise-text">
+        "Si me das otra oportunidad,<br>
+        voy a cuidar cada instante contigo<br>
+        con la misma fiereza con que<br>
+        cuido lo que más quiero."
+      </div>
+    </div>
+
+    <div class="divider">
+      <div class="d-line"></div>
+      <span class="d-ic">🐾</span>
+      <span class="d-ic">🌕</span>
+      <span class="d-ic">🐾</span>
+      <div class="d-line"></div>
+    </div>
+
+    <div class="letter-closing">Con todo lo que soy y sin guardarme nada,</div>
+    <div class="signature">~ siempre tuyo, para Luna ~</div>
+  </div>
+
+  <div class="heart-footer">
+    <div class="hearts-row">
+      <span class="h">🖤</span>
+      <span class="h">🌕</span>
+      <span class="h">🖤</span>
+      <span class="h">🌙</span>
+      <span class="h">🖤</span>
+    </div>
+    <div class="mh-footer">Monster High · Be Yourself · Be Monster</div>
+  </div>
+</div>
+
 <div class="music-bar">
   <span class="music-label">♪ fly me to the moon</span>
-  <div class="pause-btn" id="pauseBtn" title="Pausa\nReproducir" onclick="togglePausePlay()">
-    <svg id="pauseIcon" viewBox="0 0 24 24" width="20" height="20" fill="none"
-         stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="6" y="4" width="4" height="16"/>
-      <rect x="14" y="4" width="4" height="16"/>
+  <div class="ctrl-btn" id="pauseBtn" onclick="togglePlay()" title="Pausa / Play">
+    <svg id="pIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fde68a" stroke-width="2" stroke-linecap="round">
+      <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
     </svg>
-    <svg id="playIcon" viewBox="0 0 24 24" width="20" height="20" fill="#c084fc"
-         stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+    <svg id="playIcon" viewBox="0 0 24 24" width="18" height="18" fill="#fde68a" stroke="#fde68a" stroke-width="2" stroke-linecap="round" style="display:none">
       <polygon points="5 3 19 12 5 21 5 3"/>
     </svg>
   </div>
-  <div class="replay-btn" id="replayBtn" title="Repetir" onclick="replayMusic()">
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-         stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <div class="ctrl-btn" id="replayBtn" onclick="replayMusic()" title="Repetir">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fde68a" stroke-width="2" stroke-linecap="round">
       <polyline points="1 4 1 10 7 10"/>
       <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
     </svg>
   </div>
 </div>
 
-<div class="stars" id="stars"></div>
-
-<div class="page">
-
-  <!-- IMAGEN BAYONETTA -->
-  <div class="bayo-wrap">
-    <img
-      class="bayo-img"
-      src="https://images2.alphacoders.com/590/thumb-1920-590551.jpg"
-      alt="Bayonetta"
-    />
-  </div>
-
-  <!-- TÍTULO -->
-  <div class="top-decoration">
-    <div class="skull-row">
-      <span class="skull">💀</span>
-      <span class="skull" style="font-size:28px;filter:drop-shadow(0 0 8px #f472b6)">🌙</span>
-      <span class="skull">💀</span>
-    </div>
-    <div class="title-name">Mi Luna</div>
-    <div class="subtitle">para la chica más unica del universo</div>
-  </div>
-
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-gem"></div>
-    <div class="divider-line"></div>
-  </div>
-
-  <!-- CARTA -->
-  <div class="card">
-    <div class="corner-gem tl"></div>
-    <div class="corner-gem tr"></div>
-    <div class="corner-gem bl"></div>
-    <div class="corner-gem br"></div>
-
-    <div class="letter-opening">Querida Luna ✨</div>
-
-    <div class="letter-body">
-      <p>
-        En un mundo lleno de gente ordinaria, tú apareciste con la energía de una
-        <span class="highlight">Umbra Witch</span> —poderosa, misteriosa, imposible de ignorar.
-        Desde el primer momento supe que eras diferente: tienes ese fuego oscuro que
-        solo tu puedes  tener para cautivar, poderosa, fuerte, no hace falta que te lo digan,
-        lo sabes!!.
-      </p>
-
-      <div class="bayonetta-quote">
-        La oscuridad no es algo que temer — es el poder de quienes se atreven
-        a ser completamente ellas mismas. Y tú, Luna, eres exactamente eso.
-      </div>
-
-      <p>
-        Me encanta cómo puedes ser <span class="highlight-purple">fieramente tú misma</span>,
-        sin disculpas, sin filtros. Igual que las chicas de Monster High que supieron desde
-        siempre que ser diferente no es una maldición — es un
-        <span class="highlight">superpoder</span>.
-      </p>
-
-      <p>
-        Hay algo en ti que me hace querer conocerte más, escuchar tus ideas, reír contigo,
-        existir cerca de ti. Cada conversación contigo se siente como descubrir un nuevo
-        capítulo de algo que no quiero que termine.
-      </p>
-    </div>
-
-    <div class="monster-high-row">
-      <div class="mh-badge"><span>🖤</span> Fieramente única</div>
-      <div class="mh-badge"><span>🔮</span> Mágica &amp; poderosa</div>
-      <div class="mh-badge"><span>💜</span> Irreemplazable</div>
-    </div>
-
-    <div class="letter-body">
-      <p>
-        Así que aquí estoy, escribiéndote con toda la valentía de quien enfrenta lo
-        imposible — diciéndote que me gustas mucho. Que me alegra que existas.
-        Que ojalá pueda ser parte de tu historia, aunque sea en un pequeño capítulo.
-      </p>
-    </div>
-
-    <div class="letter-closing">Con todo el cariño del universo que siento por ti,</div>
-    <div class="signature">~ para Luna, siempre ~</div>
-  </div>
-
-  <div class="heart-burst">
-    <div class="hearts-row">
-      <span class="heart-item">🖤</span>
-      <span class="heart-item">💜</span>
-      <span class="heart-item">🖤</span>
-      <span class="heart-item">💗</span>
-      <span class="heart-item">🖤</span>
-    </div>
-  </div>
-
-  <div class="bat-row">
-    <span class="bat">🦇</span>
-    <span class="bat">🦇</span>
-  </div>
-
-  <div class="bottom-text">forever &amp; always · dark &amp; magical</div>
-</div>
-
 <script>
-  /* ESTRELLAS */
-  const sc = document.getElementById('stars');
-  for (let i = 0; i < 95; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const big = Math.random() > 0.82;
-    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${1.5+Math.random()*3}s;width:${big?3:2}px;height:${big?3:2}px;opacity:${Math.random()*0.6+0.1};`;
-    sc.appendChild(s);
+  /* PARTICLES */
+  const pc = document.getElementById('particles');
+  const cols = ['#f5a623','#fde68a','#fb923c','#d97706','#fef3c7','#a78bfa'];
+  for(let i=0;i<40;i++){
+    const d=document.createElement('div'); d.className='p';
+    const sz=Math.random()*3.5+1;
+    d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      --t:${3+Math.random()*5}s;
+      --tx:${(Math.random()-.5)*90}px;--ty:${(Math.random()-.5)*90}px;
+      animation-delay:${Math.random()*5}s;
+      box-shadow:0 0 ${sz*2.5}px currentColor;`;
+    pc.appendChild(d);
   }
 
-  /* YouTube Player API */
-  let player;
-  let isPlaying = true;
+  /* PAWPRINTS */
+  const pw = document.getElementById('paws');
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div'); p.className='paw';
+    p.textContent='🐾';
+    const r1=(Math.random()-0.5)*30+'deg', r2=(Math.random()-0.5)*30+'deg';
+    p.style.cssText=`left:${Math.random()*95}%;top:${Math.random()*90}%;
+      --sz:${14+Math.random()*18}px;
+      --pt:${6+Math.random()*7}s;
+      --px:${(Math.random()-.5)*70}px;--py:${(Math.random()-.5)*50}px;
+      --r1:${r1};--r2:${r2};
+      animation-delay:${Math.random()*5}s;`;
+    pw.appendChild(p);
+  }
 
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('yt-frame', {
-      events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerStateChange
+  /* YOUTUBE */
+  let player, playing=true;
+  function onYouTubeIframeAPIReady(){
+    player=new YT.Player('yt-frame',{
+      events:{
+        onReady: e=>e.target.playVideo(),
+        onStateChange: e=>{ playing=e.data===YT.PlayerState.PLAYING; syncIcon(); }
       }
     });
   }
-
-  function onPlayerReady(event) {
-    event.target.playVideo();
+  function togglePlay(){
+    if(!player)return;
+    playing?player.pauseVideo():player.playVideo();
   }
-
-  function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING) {
-      isPlaying = true;
-      updatePauseIcon();
-    } else if (event.data == YT.PlayerState.PAUSED) {
-      isPlaying = false;
-      updatePauseIcon();
-    }
+  function syncIcon(){
+    document.getElementById('pIcon').style.display    =playing?'block':'none';
+    document.getElementById('playIcon').style.display =playing?'none':'block';
   }
-
-  /* PAUSE/PLAY */
-  function togglePausePlay() {
-    if (player) {
-      if (isPlaying) {
-        player.pauseVideo();
-        isPlaying = false;
-      } else {
-        player.playVideo();
-        isPlaying = true;
-      }
-      updatePauseIcon();
-    }
+  function replayMusic(){
+    const b=document.getElementById('replayBtn');
+    b.classList.add('spin');
+    setTimeout(()=>b.classList.remove('spin'),520);
+    if(player){player.seekTo(0);player.playVideo();playing=true;syncIcon();}
   }
-
-  function updatePauseIcon() {
-    const pauseIcon = document.getElementById('pauseIcon');
-    const playIcon = document.getElementById('playIcon');
-    if (isPlaying) {
-      pauseIcon.style.display = 'block';
-      playIcon.style.display = 'none';
-    } else {
-      pauseIcon.style.display = 'none';
-      playIcon.style.display = 'block';
-    }
-  }
-
-  /* REPLAY */
-  function replayMusic() {
-    const btn = document.getElementById('replayBtn');
-    btn.classList.add('spin');
-    setTimeout(() => btn.classList.remove('spin'), 520);
-    if (player) {
-      player.seekTo(0);
-      player.playVideo();
-      isPlaying = true;
-      updatePauseIcon();
-    }
-  }
-
-  /* Load YouTube API */
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  const t=document.createElement('script');
+  t.src='https://www.youtube.com/iframe_api';
+  document.head.appendChild(t);
 </script>
 </body>
 </html>
