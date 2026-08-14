@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lado A — una carta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --noche:  #16081F;   /* fondo, ciruela casi negro */
+    --morado: #8B3FD9;   /* morado principal */
+    --lila:   #C77DFF;   /* brillo lila */
+    --dorado: #E9B44C;   /* dorado ámbar */
+    --cacao:  #6B4030;   /* cacao profundo */
+    --durazno:#F2D2B8;   /* papel / texto claro */
+    --neon:   #FF5FA2;   /* rosa, una sola vez */
+
+    --display: "Syne", system-ui, sans-serif;
+    --cuerpo:  "Newsreader", Georgia, serif;
+    --mono:    "Space Mono", ui-monospace, monospace;
+    --mano:    "Caveat", "Segoe Script", cursive;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--noche);
+    color:var(--durazno);
+    font-family:var(--cuerpo);
+    font-size:clamp(17px,1.05vw + 14px,20px);
+    line-height:1.75;
+    overflow-x:hidden;
+  }
+
+  /* atmósfera: dos luces, nada más */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(70vw 55vh at 18% -10%, rgba(139,63,217,.42), transparent 65%),
+      radial-gradient(60vw 50vh at 92% 108%, rgba(233,180,76,.26), transparent 62%);
+  }
+
+  .lienzo{ position:relative; z-index:1; }
+
+  .marco{
+    width:min(760px, 90vw);
+    margin-inline:auto;
+  }
+
+  /* ---------- portada ---------- */
+
+  .portada{
+    min-height:100svh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:clamp(32px,6vh,72px) 0;
+    gap:clamp(24px,4vh,44px);
+  }
+
+  .cinta-superior{
+    display:flex; align-items:center; gap:14px;
+    font-family:var(--mono); font-size:12px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--lila);
+  }
+  .cinta-superior span:last-child{ color:var(--dorado); }
+  .cinta-superior hr{
+    flex:1; border:0; height:1px;
+    background:linear-gradient(90deg, var(--morado), transparent);
+    margin:0;
+  }
+
+  /* ---------- el casete ---------- */
+
+  .casete{ width:100%; height:auto; display:block; filter:drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
+
+  .carrete{ transform-box:fill-box; transform-origin:center; }
+  .rodando .carrete{ animation:girar 3.4s linear infinite; }
+  .rodando .carrete--der{ animation-duration:2.2s; }
+  @keyframes girar{ to{ transform:rotate(360deg); } }
+
+  .nombre-cinta{
+    font-family:var(--mano);
+    font-size:56px; font-weight:700;
+    fill:var(--cacao);
+  }
+  .rotulo{
+    font-family:var(--mono); font-size:15px;
+    letter-spacing:.14em; fill:#9a7358;
+  }
+
+  /* ---------- controles ---------- */
+
+  .consola{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  }
+
+  .boton{
+    appearance:none; cursor:pointer;
+    font-family:var(--mono); font-size:13px; font-weight:700;
+    letter-spacing:.16em; text-transform:uppercase;
+    color:var(--noche); background:var(--lila);
+    border:0; border-radius:999px;
+    padding:14px 26px;
+    transition:background .25s ease, transform .15s ease;
+  }
+  .boton:hover{ background:#fff; }
+  .boton:active{ transform:translateY(1px); }
+  .boton:focus-visible{ outline:3px solid var(--neon); outline-offset:3px; }
+  .boton[disabled]{ opacity:.45; cursor:progress; }
+
+  .ecualizador{ display:flex; align-items:flex-end; gap:4px; height:26px; }
+  .ecualizador i{
+    width:4px; height:5px; border-radius:2px;
+    background:var(--morado); display:block;
+  }
+  .rodando .ecualizador i{ animation:brincar .9s ease-in-out infinite alternate; background:var(--neon); }
+  .ecualizador i:nth-child(2){ animation-delay:.12s; }
+  .ecualizador i:nth-child(3){ animation-delay:.30s; }
+  .ecualizador i:nth-child(4){ animation-delay:.06s; }
+  .ecualizador i:nth-child(5){ animation-delay:.22s; }
+  .ecualizador i:nth-child(6){ animation-delay:.38s; }
+  .ecualizador i:nth-child(7){ animation-delay:.16s; }
+  @keyframes brincar{ to{ height:26px; } }
+
+  .estado{
+    font-family:var(--mono); font-size:12px; letter-spacing:.16em;
+    text-transform:uppercase; color:rgba(242,210,184,.5);
+    margin:0;
+  }
+
+  /* ---------- reproductor ---------- */
+
+  .bloque-audio{ display:flex; flex-direction:column; gap:14px; }
+
+  .barra{
+    position:relative; height:7px; border-radius:4px;
+    background:rgba(199,125,255,.15);
+    cursor:pointer; overflow:hidden;
+  }
+  .barra::after{
+    content:""; position:absolute; inset:0;
+    box-shadow:inset 0 0 0 1px rgba(199,125,255,.18);
+    border-radius:4px; pointer-events:none;
+  }
+  .barra i{
+    position:absolute; top:0; left:0; bottom:0; width:0;
+    background:linear-gradient(90deg, var(--morado), var(--lila));
+    transition:width .2s linear;
+  }
+  .barra:focus-visible{ outline:3px solid var(--neon); outline-offset:4px; }
+
+  .tiempo{
+    display:flex; justify-content:space-between;
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.08em;
+    color:rgba(242,210,184,.42); margin:0;
+  }
+
+  .credito{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.1em;
+    color:rgba(242,210,184,.42); margin:0;
+  }
+  .credito a{ color:var(--lila); text-decoration:none; border-bottom:1px solid rgba(199,125,255,.4); }
+  .credito a:hover{ color:#fff; }
+
+  /* ---------- titular ---------- */
+
+  .titular{
+    font-family:var(--display); font-weight:800;
+    font-size:clamp(38px,7.5vw,86px);
+    line-height:.95; letter-spacing:-.03em;
+    margin:0;
+    color:#fff;
+  }
+  .titular em{
+    font-style:normal;
+    background:linear-gradient(100deg, var(--lila), var(--dorado));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .bajada{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:.1em;
+    color:rgba(242,210,184,.62); max-width:44ch; margin:18px 0 0;
+    line-height:1.9;
+  }
+
+  /* ---------- notas / la carta ---------- */
+
+  .notas{ padding:clamp(70px,14vh,140px) 0; }
+
+  .encabezado-seccion{
+    font-family:var(--mono); font-size:12px; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--dorado);
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:clamp(28px,5vh,52px);
+  }
+  .encabezado-seccion::after{
+    content:""; flex:1; height:1px;
+    background:linear-gradient(90deg, rgba(233,180,76,.55), transparent);
+  }
+
+  .notas p{
+    max-width:60ch;
+    margin:0 0 1.55em;
+    font-weight:300;
+    color:rgba(242,210,184,.9);
+  }
+  .notas p:first-of-type::first-letter{
+    font-family:var(--display); font-weight:800;
+    float:left; font-size:3.1em; line-height:.82;
+    padding:.06em .12em 0 0;
+    color:var(--lila);
+  }
+  .notas p em{ color:#fff; font-style:italic; }
+
+  .revelar{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .revelar.visible{ opacity:1; transform:none; }
+
+  /* ---------- tracklist ---------- */
+
+  .lista{ padding-bottom:clamp(70px,14vh,140px); }
+
+  .pista{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:baseline; gap:16px;
+    padding:16px 8px;
+    border-top:1px solid rgba(199,125,255,.16);
+    transition:background .3s ease, padding-left .3s ease;
+  }
+  .pista:last-child{ border-bottom:1px solid rgba(199,125,255,.16); }
+  .pista:hover{ background:rgba(139,63,217,.14); padding-left:18px; }
+
+  .pista b{
+    font-family:var(--mono); font-size:12px; font-weight:700;
+    color:var(--morado); letter-spacing:.06em;
+  }
+  .pista span{ font-size:.95em; color:rgba(242,210,184,.92); }
+  .pista time{
+    font-family:var(--mono); font-size:12px;
+    color:rgba(242,210,184,.38);
+  }
+
+  /* ---------- cierre ---------- */
+
+  .cierre{
+    padding:clamp(60px,12vh,120px) 0 clamp(70px,14vh,130px);
+    border-top:1px solid rgba(233,180,76,.22);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .firma{
+    font-family:var(--mano); font-size:clamp(34px,5vw,52px);
+    color:var(--lila); line-height:1.1;
+    margin:0;
+  }
+  .pie{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.14em;
+    text-transform:uppercase; color:rgba(242,210,184,.38);
+    margin:0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .rodando .carrete,
+    .rodando .ecualizador i{ animation:none; }
+    .rodando .ecualizador i{ height:16px; }
+    .revelar{ opacity:1; transform:none; transition:none; }
+    .barra i{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="lienzo">
+
+  <!-- ============ PORTADA ============ -->
+  <header class="portada marco">
+
+    <div class="cinta-superior">
+      <span>Lado A</span>
+      <hr>
+      <span>90 min · alta fidelidad</span>
+    </div>
+
+    <svg class="casete" viewBox="0 0 640 400" role="img"
+         aria-label="Un casete morado con el nombre escrito a mano en la etiqueta">
+      <defs>
+        <linearGradient id="carcasa" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#3A1655"/>
+          <stop offset="100%" stop-color="#1F0B2E"/>
+        </linearGradient>
+        <linearGradient id="papel" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"  stop-color="#F6E0CB"/>
+          <stop offset="100%" stop-color="#E2BE9C"/>
+        </linearGradient>
+      </defs>
+
+      <!-- carcasa -->
+      <rect x="16" y="16" width="608" height="368" rx="22" fill="url(#carcasa)"/>
+      <rect x="16" y="16" width="608" height="368" rx="22" fill="none"
+            stroke="#C77DFF" stroke-opacity=".28" stroke-width="2"/>
+
+      <!-- etiqueta de papel -->
+      <rect x="46" y="44" width="548" height="176" rx="7" fill="url(#papel)"/>
+      <line x1="46" y1="88" x2="594" y2="88" stroke="#8B3FD9" stroke-opacity=".55" stroke-width="7"/>
+      <text class="rotulo" x="66" y="112">PARA</text>
+
+      <text class="nombre-cinta" x="66" y="176">Alekasa</text>
+
+      <text class="rotulo" x="470" y="112" text-anchor="middle">DOLBY B</text>
+      <rect x="404" y="128" width="132" height="1.5" fill="#9a7358" fill-opacity=".5"/>
+      <rect x="404" y="152" width="132" height="1.5" fill="#9a7358" fill-opacity=".5"/>
+      <rect x="404" y="176" width="132" height="1.5" fill="#9a7358" fill-opacity=".5"/>
+
+      <!-- ventana -->
+      <rect x="120" y="240" width="400" height="112" rx="10" fill="#0D0416"/>
+      <rect x="120" y="240" width="400" height="112" rx="10" fill="none"
+            stroke="#C77DFF" stroke-opacity=".2"/>
+
+      <!-- cinta entre carretes -->
+      <path d="M196 296 Q320 330 444 296" stroke="#4B2A1C" stroke-width="9" fill="none"/>
+
+      <!-- carrete izquierdo -->
+      <g class="carrete">
+        <circle cx="196" cy="296" r="44" fill="#3E2417"/>
+        <circle cx="196" cy="296" r="22" fill="#150720"/>
+        <g fill="#E9B44C">
+          <rect x="192" y="264" width="8" height="14" rx="3"/>
+          <rect x="192" y="314" width="8" height="14" rx="3"/>
+          <rect x="164" y="292" width="14" height="8" rx="3"/>
+          <rect x="214" y="292" width="14" height="8" rx="3"/>
+        </g>
+      </g>
+
+      <!-- carrete derecho -->
+      <g class="carrete carrete--der">
+        <circle cx="444" cy="296" r="30" fill="#3E2417"/>
+        <circle cx="444" cy="296" r="22" fill="#150720"/>
+        <g fill="#E9B44C">
+          <rect x="440" y="266" width="8" height="12" rx="3"/>
+          <rect x="440" y="314" width="8" height="12" rx="3"/>
+          <rect x="414" y="292" width="12" height="8" rx="3"/>
+          <rect x="462" y="292" width="12" height="8" rx="3"/>
+        </g>
+      </g>
+
+      <!-- tornillos -->
+      <g fill="#C77DFF" fill-opacity=".22">
+        <circle cx="52" cy="358" r="6"/>
+        <circle cx="320" cy="368" r="6"/>
+        <circle cx="588" cy="358" r="6"/>
+      </g>
+    </svg>
+
+    <div class="bloque-audio">
+      <!-- 🎵 Pon el archivo junto a este HTML y que se llame igual -->
+      <audio id="cancion" src="cancion.m4a" preload="metadata"></audio>
+
+      <div class="consola">
+        <button class="boton" id="play" aria-pressed="false">▶ Poner la cinta</button>
+        <div class="ecualizador" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <p class="estado" id="estado">Detenida</p>
+      </div>
+
+      <div class="barra" id="barra" role="slider" tabindex="0"
+           aria-label="Avance de la canción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <i id="avance"></i>
+      </div>
+
+      <p class="tiempo">
+        <span id="transcurrido">0:00</span>
+        <span id="total">--:--</span>
+      </p>
+
+      <p class="credito">
+        Daryl Hall &amp; John Oates — «Out of Touch» (1984) ·
+      </p>
+    </div>
+
+    <div>
+      <h1 class="titular">Te grabé<br>algo en <em>morado</em></h1>
+      <p class="bajada">
+        Una carta con forma de casete. Dale play y baja a leer:
+        la cinta gira mientras la canción suena.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ LA CARTA ============ -->
+  <section class="notas marco">
+    <h2 class="encabezado-seccion">Notas del interior</h2>
+
+    <p class="revelar">
+      Hay canciones que uno no elige: se te aparecen. Cada vez que pienso en ti
+      me suena <em>Out of Touch</em>, de Hall &amp; Oates, y me tomó un rato entender
+      por qué. No es solo que sea puro brillo y ganas de moverse. Es que por
+      debajo de todo ese sintetizador hay alguien diciendo que extraña a otra
+      persona aunque la tenga cerca. Así se siente extrañarte: con energía de
+      fiesta y un hilito de distancia que nunca termina de cerrar.
+    </p>
+
+    <p class="revelar">
+      Toda esta página está en morado y dorado por una razón muy tonta y muy
+      exacta: son los colores con los que te tengo guardada en la cabeza. La
+      peluca de Yoruichi. Ese día entendí algo de ti que ya sabía pero no había
+      visto: te avientas. Te pones el personaje encima sin miedo al ridículo,
+      y en vez de esconderte detrás, te <em>notas más</em>. Hay gente que se
+      disfraza para desaparecer. Tú te disfrazas y sales completa.
+    </p>
+
+    <p class="revelar">
+      No te escribo esto porque haya pasado algo especial. Te lo escribo porque
+      no ha pasado nada y aún así ahí sigues: en los chistes que solo tú
+      entiendes, en las cosas que veo y pienso <em>«esto le va a encantar»</em>,
+      en el reflejo de contarte cómo me fue antes de saber si me fue bien.
+      Eso no lo hace cualquiera. Eso no me pasa con cualquiera.
+    </p>
+
+    <p class="revelar">
+      Gracias por escuchar sin apurarme, por aparecerte sin que te llame, por
+      hacer que los días normales tengan algo que valga la pena contar.
+      Si esto fuera de verdad un casete, se acabaría la cinta y habría que
+      darle vuelta. Yo la volvería a poner desde el principio.
+    </p>
+  </section>
+
+  <!-- ============ TRACKLIST ============ -->
+  <section class="lista marco">
+    <h2 class="encabezado-seccion">Lista de canciones</h2>
+
+    <div class="pista"><b>01</b><span>La peluca morada</span><time>4:12</time></div>
+    <div class="pista"><b>02</b><span>Tu risa dos segundos antes del chiste</span><time>3:41</time></div>
+    <div class="pista"><b>03</b><span>La distancia no cuenta como excusa</span><time>4:33</time></div>
+    <div class="pista"><b>04</b><span>Todo lo que veo y te quiero contar</span><time>3:58</time></div>
+    <div class="pista"><b>05</b><span>Lado B — aquí seguimos</span><time>6:20</time></div>
+  </section>
+
+  <!-- ============ CIERRE ============ -->
+  <footer class="cierre marco">
+    <p class="firma">Con cariño,<br>Jose Carlos Mar Rangel</p>
+    <p class="pie">Grabado en casa · Lado A · Repetir sin límite</p>
+  </footer>
+
+</div>
+
+<script>
+  /* ---------------------------------------------------------
+     La cinta gira mientras suena el audio.
+     El archivo debe llamarse cancion.mp3 y estar en la misma
+     carpeta que este HTML. Si le pones otro nombre, cámbialo
+     también en el atributo src del <audio> de arriba.
+     --------------------------------------------------------- */
+  const cancion     = document.getElementById('cancion');
+  const boton       = document.getElementById('play');
+  const estado      = document.getElementById('estado');
+  const barra       = document.getElementById('barra');
+  const avance      = document.getElementById('avance');
+  const transcurrido= document.getElementById('transcurrido');
+  const total       = document.getElementById('total');
+
+  function reloj(seg){
+    if (!isFinite(seg)) return '--:--';
+    const m = Math.floor(seg / 60);
+    const s = Math.floor(seg % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+  }
+
+  function pintar(sonando){
+    document.body.classList.toggle('rodando', sonando);
+    boton.textContent = sonando ? '❚❚ Pausar' : '▶ Poner la cinta';
+    boton.setAttribute('aria-pressed', sonando);
+    estado.textContent = sonando ? 'Sonando · Lado A' : 'Detenida';
+  }
+
+  boton.addEventListener('click', () => {
+    if (cancion.paused) cancion.play().catch(() => {
+      estado.textContent = 'No se pudo reproducir';
+    });
+    else cancion.pause();
+  });
+
+  cancion.addEventListener('play',  () => pintar(true));
+  cancion.addEventListener('pause', () => pintar(false));
+
+  cancion.addEventListener('ended', () => {
+    pintar(false);
+    estado.textContent = 'Fin del lado A';
+  });
+
+  cancion.addEventListener('loadedmetadata', () => {
+    total.textContent = reloj(cancion.duration);
+  });
+
+  cancion.addEventListener('timeupdate', () => {
+    const pct = (cancion.currentTime / cancion.duration) * 100 || 0;
+    avance.style.width = pct + '%';
+    barra.setAttribute('aria-valuenow', Math.round(pct));
+    transcurrido.textContent = reloj(cancion.currentTime);
+  });
+
+  cancion.addEventListener('error', () => {
+    estado.textContent = 'Falta el archivo cancion.mp3';
+    boton.disabled = true;
+  });
+
+  // Adelantar o regresar dando clic en la barra.
+  barra.addEventListener('click', (e) => {
+    if (!isFinite(cancion.duration)) return;
+    const caja = barra.getBoundingClientRect();
+    cancion.currentTime = ((e.clientX - caja.left) / caja.width) * cancion.duration;
+  });
+
+  // Lo mismo con el teclado.
+  barra.addEventListener('keydown', (e) => {
+    if (!isFinite(cancion.duration)) return;
+    if (e.key === 'ArrowRight') cancion.currentTime = Math.min(cancion.duration, cancion.currentTime + 5);
+    if (e.key === 'ArrowLeft')  cancion.currentTime = Math.max(0, cancion.currentTime - 5);
+  });
+
+  // Los párrafos aparecen conforme se leen.
+  const ojo = new IntersectionObserver((entradas) => {
+    entradas.forEach(e => {
+      if (e.isIntersecting){
+        e.target.classList.add('visible');
+        ojo.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.25 });
+
+  document.querySelectorAll('.revelar').forEach((p, i) => {
+    p.style.transitionDelay = (i * 90) + 'ms';
+    ojo.observe(p);
+  });
+</script>
+</body>
+</html>
